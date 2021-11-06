@@ -3,7 +3,7 @@ import_file_ui <- function(id) {
   ns <- NS(id)
   
   tagList(
-    fileInput(ns("imported_file"), "New file (project)",
+    fileInput(ns("imported_file"), "Choose new file (project)",
               accept = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
   )
 }
@@ -11,7 +11,7 @@ import_file_ui <- function(id) {
 import_file_server <- function(id) {
   moduleServer(id, function(input, output, session) {
     
-    imported_file <- reactive({
+    reactive({
       file <- input$imported_file
       req(file)
      file <- readxl::read_xlsx(file$datapath, guess_max = 1000000)
