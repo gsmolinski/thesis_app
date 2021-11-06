@@ -4,7 +4,7 @@ import_file_ui <- function(id) {
   
   tagList(
     fileInput(ns("imported_file"), "New file (project)",
-              accept = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheetV")
+              accept = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
   )
 }
 
