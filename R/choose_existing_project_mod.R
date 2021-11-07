@@ -10,6 +10,10 @@ choose_existing_project_ui <- function(id) {
 
 choose_existing_project_server <- function(id, db_con) {
   moduleServer(id, function(input, output, session) {
-    updateSelectizeInput(session = session, "choose_project", choices = dbGetQuery(db_con, "SELECT name FROM projects ORDER BY name"))
+    # update only when refreshing the whole app
+    updateSelectizeInput(session = session, "choose_project",
+                         choices = pull(dbGetQuery(db_con, "SELECT name FROM projects ORDER BY name"), name))
+    
+    return(reactive(input$choose_project))
   })
 }
