@@ -15,18 +15,27 @@ load_project_server <- function(id, db_con, imported, chosen_project) {
         if (isTruthy(chosen_project())) {
           query_take_id <- glue::glue_sql("SELECT id FROM projects WHERE name = {project_name}",
                                   project_name = chosen_project(), .con = db_con)
-          dbGetQuery(db_con, query_take_id) %>% 
+          id_project <- dbGetQuery(db_con, query_take_id) %>% 
             pull(id)
+          id
         } else {
           query_write_project_name <- glue::glue_sql("INSERT INTO projects (name) VALUES ({file_name})",
                                                      file_name = imported$load_file()$file_name, .con = db_con)
           dbSendStatement(db_con, query_write_project_name)
-          # write data to table as well!
           
           query_take_id <- glue::glue_sql("SELECT id FROM projects WHERE name = {file_name}",
                                           file_name = imported$load_file()$file_name, .con = db_con)
-          dbGetQuery(db_con, query_take_id) %>% 
+          id_project <- dbGetQuery(db_con, query_take_id) %>% 
             pull(id)
+          
+          loaded_data <- imported$load_file()$file %>% 
+            mutate(project_id = id_project,
+                   verbatim_id = 1:nrow(imported$load_file()$file)) %>% 
+            select(project_id, participant_id = id, verbatim_id, variable, value)
+          
+          dbAppendTable(db_con, "verbatims", loaded_data)
+          
+          id
         }
       }
     })
