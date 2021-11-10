@@ -17,7 +17,7 @@ load_project_server <- function(id, db_con, imported, chosen_project) {
                                   project_name = chosen_project(), .con = db_con)
           id_project <- dbGetQuery(db_con, query_take_id) %>% 
             pull(id)
-          id
+          id_project
         } else {
           query_write_project_name <- glue::glue_sql("INSERT INTO projects (name) VALUES ({file_name})",
                                                      file_name = imported$load_file()$file_name, .con = db_con)
@@ -35,7 +35,7 @@ load_project_server <- function(id, db_con, imported, chosen_project) {
           
           dbAppendTable(db_con, "verbatims", loaded_data)
           
-          id
+          id_project
         }
       }
     })
@@ -55,6 +55,6 @@ load_project_server <- function(id, db_con, imported, chosen_project) {
     
     observe(setup_project())
     
-    return(setup_project)
+    return(list(setup_project = setup_project, input_load = reactive(input$load)))
   })
 }

@@ -22,6 +22,10 @@ ui <- fluidPage(
     ),
     tabPanel(title = "Code",
              br()
+             ),
+    tabPanel(title = "Export",
+             br(),
+             export_remove_ui("export")
              )
   )
 )
@@ -34,6 +38,9 @@ server <- function(input, output, session) {
   loaded_project <- load_project_server("load", db_con,
                       imported = imported,
                       chosen_project = chosen_project)
+  export_remove_server("export", db_con,
+                       setup_project = loaded_project$setup_project,
+                       chosen_project = chosen_project)
   
   observeEvent(input$debug, {
     browser()
