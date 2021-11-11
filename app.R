@@ -3,6 +3,7 @@ library(shinyalert)
 library(DBI)
 library(stringi)
 library(dplyr)
+library(stringdist)
 
 ui <- fluidPage(
   useShinyalert(),
