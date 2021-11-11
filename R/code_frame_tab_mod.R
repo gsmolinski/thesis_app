@@ -22,7 +22,7 @@ code_frame_tab_server <- function(id, db_con, setup_project, chosen_variable, lo
     
     proxy <- dataTableProxy("code_frame_table")
     
-    observeEvent(load(), { # do not work when using load()
+    observeEvent(load(), {
       query <- glue::glue_sql("SELECT code, label FROM code_frame
                               WHERE project_id = {chosen_project}
                               AND variable IN ({chosen_variable*})",
