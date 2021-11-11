@@ -3,7 +3,7 @@ load_project_ui <- function(id) {
   ns <- NS(id)
   
   tagList(
-    actionButton(ns("load"), "Load project")
+    actionButton(ns("load"), "Load")
   )
 }
 

@@ -21,7 +21,8 @@ ui <- fluidPage(
              )
     ),
     tabPanel(title = "Code",
-             br()
+             br(),
+             choose_variable_ui("code_variable")
              ),
     tabPanel(title = "Export",
              br(),
@@ -38,6 +39,9 @@ server <- function(input, output, session) {
   loaded_project <- load_project_server("load", db_con,
                       imported = imported,
                       chosen_project = chosen_project)
+  chosen_variable <- choose_variable_server("code_variable", db_con,
+                                            setup_project = loaded_project$setup_project,
+                                            input_load = loaded_project$input_load)
   export_remove_server("export", db_con,
                        setup_project = loaded_project$setup_project,
                        chosen_project = chosen_project)
