@@ -8,12 +8,12 @@ export_remove_ui <- function(id) {
   )
 }
 
-export_remove_server <- function(id, db_con, setup_project, chosen_project) {
+export_remove_server <- function(id, db_con, setup_project) {
   moduleServer(id, function(input, output, session) {
     
     output$export_button <- downloadHandler(
       filename = function() {
-        paste0("Coded ", chosen_project(), ".xlsx")
+        paste0("Coded.xlsx")
       },
       content = function(file) {
         code_frame_query <- glue::glue_sql("SELECT variable, code, label FROM code_frame

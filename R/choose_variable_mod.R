@@ -21,6 +21,6 @@ choose_variable_server <- function(id, db_con, setup_project, input_load) {
                            server = TRUE)
     })
     
-    return(reactive(input$load_variable))
+    return(list(chosen = reactive(input$choose_variable), load = reactive(input$load_variable)))
   })
 }

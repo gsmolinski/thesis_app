@@ -3,7 +3,9 @@ library(shinyalert)
 library(DBI)
 library(stringi)
 library(dplyr)
+library(tibble)
 library(stringdist)
+library(DT)
 
 ui <- fluidPage(
   useShinyalert(),
@@ -23,7 +25,16 @@ ui <- fluidPage(
     ),
     tabPanel(title = "Code",
              br(),
-             choose_variable_ui("code_variable")
+             choose_variable_ui("code_variable"),
+             tabsetPanel(
+               tabPanel(title = "Verbatim",
+                        br()
+               ),
+               tabPanel(title = "Code frame",
+                        br(),
+                        code_frame_tab_ui("code_frame")
+               )
+             )
              ),
     tabPanel(title = "Export",
              br(),
@@ -43,9 +54,12 @@ server <- function(input, output, session) {
   chosen_variable <- choose_variable_server("code_variable", db_con,
                                             setup_project = loaded_project$setup_project,
                                             input_load = loaded_project$input_load)
+  code_frame_tab_server("code_frame", db_con,
+                        setup_project = loaded_project$setup_project,
+                        chosen_variable = chosen_variable$chosen,
+                        load = chosen_variable$load)
   export_remove_server("export", db_con,
-                       setup_project = loaded_project$setup_project,
-                       chosen_project = chosen_project)
+                       setup_project = loaded_project$setup_project)
   
   observeEvent(input$debug, {
     browser()
