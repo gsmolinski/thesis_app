@@ -28,7 +28,7 @@ export_remove_server <- function(id, db_con, setup_project) {
         codes <- dbGetQuery(db_con, codes_query)
         codes <- codes %>% 
           group_by(verbatim_id) %>% 
-          summarise(code = stri_c(code, collapse = " "))
+          summarise(code = stri_c(unique(code), collapse = " "))
         
         verbatims_query <- glue::glue_sql("SELECT participant_id, verbatim_id, variable, value
                                           FROM verbatims WHERE project_id = {chosen_project}",
@@ -46,6 +46,7 @@ export_remove_server <- function(id, db_con, setup_project) {
       query <- glue::glue_sql("DELETE FROM projects WHERE id = {project_id}",
                               project_id = setup_project(), .con = db_con)
       dbSendStatement(db_con, query)
+      shinyalert(text = "Project deleted", type = "success")
     })
   })
 }
