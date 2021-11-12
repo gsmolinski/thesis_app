@@ -22,15 +22,19 @@ code_frame_tab_server <- function(id, db_con, setup_project, chosen_variable, lo
     
     proxy <- dataTableProxy("code_frame_table")
     
-    observeEvent(load(), {
+    pull_data <- reactive({
       query <- glue::glue_sql("SELECT code, label FROM code_frame
                               WHERE project_id = {chosen_project}
                               AND variable IN ({chosen_variable*})",
                               chosen_project = setup_project(),
                               chosen_variable = chosen_variable(),
                               .con = db_con)
-      frame <- dbGetQuery(db_con, query)
-      code_frame(frame)
+      code_frame <- dbGetQuery(db_con, query)
+      code_frame
+    })
+    
+    observeEvent(load(), {
+      code_frame(pull_data())
     })
     
     output$code_frame_table <- renderDT(
@@ -56,14 +60,12 @@ code_frame_tab_server <- function(id, db_con, setup_project, chosen_variable, lo
     })
     
     observeEvent(input$save, {
-      frame <- code_frame()
-      if (any(duplicated(frame$code))) {
-        shinyalert(text = "Codes cannot be duplicated", type = "error")
+      if (any(duplicated(code_frame()))) {
+        shinyalert(text = "Codes with labels cannot be duplicated", type = "error")
       } else {
-        # write data, perhaps we should pull all data, hide in datatable and now just append it back?
+        # write data, perhaps we should pull out all data, hide in datatable and now just append it back?
         # but before this, remove all data for chosen variables and project?
       }
     })
-    
   })
 }
