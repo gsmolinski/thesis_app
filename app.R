@@ -6,6 +6,7 @@ library(dplyr)
 library(tibble)
 library(stringdist)
 library(DT)
+library(purrr)
 
 ui <- fluidPage(
   useShinyalert(),
@@ -45,6 +46,7 @@ ui <- fluidPage(
 
 server <- function(input, output, session) {
   db_con <- dbConnect(RSQLite::SQLite(), "data/oe_database.db")
+  dbSendStatement(db_con, "PRAGMA foreign_keys = ON")
   
   imported <- import_file_server("import")
   chosen_project <- choose_existing_project_server("existing_project", db_con)
