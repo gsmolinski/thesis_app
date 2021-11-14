@@ -31,7 +31,14 @@ code_frame_tab_server <- function(id, db_con, setup_project, chosen_variable, lo
                               .con = db_con)
       code_frame <- dbGetQuery(db_con, query_pull)
       if (nrow(code_frame) > 0) {
+        if (!all(chosen_variable() %in% code_frame$variable)) {
+          code_frame <- rbind(code_frame, data.frame(variable = chosen_variable()[!chosen_variable() %in% code_frame$variable],
+                                       code = NA,
+                                       label = NA))
+        } # when additional chosen variables don't have any code, then it is necessary
+        # otherwise they would be missed below
         code_frame_split <- split(code_frame[, -1], code_frame$variable)
+        code_frame_split <- map(code_frame_split, filter, !is.na(code)) # we just want empty data.frame for missed variable
         code_frame <- reduce(code_frame_split, union)
         codes_duplicated <- unique(code_frame$code[duplicated(code_frame$code)])
         if (length(codes_duplicated) > 0) {
@@ -54,11 +61,15 @@ code_frame_tab_server <- function(id, db_con, setup_project, chosen_variable, lo
         
         code_frame_split <- map(code_frame_split, ~ anti_join(code_frame, .x, by = c("code", "label")))
         code_frame_binded <- data.table::rbindlist(code_frame_split, idcol = TRUE) %>% 
-          rename(variable = .id)
+          mutate(project_id = setup_project()) %>% 
+          rename(variable = .id) %>% 
+          relocate(project_id)
         if (code_frame_binded[, .N] > 0) {
           dbAppendTable(db_con, "code_frame", code_frame_binded)
         }
       }
+      code_frame <- code_frame %>% 
+        select(code, label) # in case we had empty code_frame, but pulled variable column
       list(code_frame = code_frame, chosen_variable = chosen_variable()) # chosen variables when
       # load button was pushed (from the time when pushed!)
     })
@@ -123,14 +134,14 @@ code_frame_tab_server <- function(id, db_con, setup_project, chosen_variable, lo
       row <- req(input$code_frame_table_rows_selected)
       frame <- code_frame()
       code <- pull(frame[as.numeric(row), ], code)
-      code_is_duplicated <- any(frame$code == code) # means user only recoded, not removed really
+      code_is_duplicated <- any(frame$code[-row] == code) # means user only recoded, not removed really
       frame <- frame[-as.numeric(row), ]
       code_frame(frame)
       if (!code_is_duplicated) { # so do not touch database because of ON DELETE CASCADE!
         query <- glue::glue_sql("DELETE FROM code_frame WHERE project_id = {project}
-                              AND variable IN {variables*} AND code = chosen_code",
+                              AND variable IN ({variables*}) AND code = {chosen_code}",
                               project = setup_project(),
-                              variable = pull_data()$chosen_variable,
+                              variables = pull_data()$chosen_variable,
                               chosen_code = code,
                               .con = db_con)
         dbSendStatement(db_con, query)
