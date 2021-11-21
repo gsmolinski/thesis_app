@@ -7,6 +7,8 @@ library(tibble)
 library(stringdist)
 library(DT)
 library(purrr)
+library(wordcloud2)
+library(tidyr)
 
 ui <- fluidPage(
   useShinyalert(),
@@ -29,7 +31,11 @@ ui <- fluidPage(
              choose_variable_ui("code_variable"),
              tabsetPanel(
                tabPanel(title = "Verbatim",
-                        br()
+                        br(),
+                        fluidRow(
+                          column(6, offset = 6, wordcloud_freq_ui("wordcloud")),
+                          br()
+                        )
                ),
                tabPanel(title = "Code frame",
                         br(),
@@ -62,6 +68,11 @@ server <- function(input, output, session) {
                         load = chosen_variable$load)
   export_remove_server("export", db_con,
                        setup_project = loaded_project$setup_project)
+  
+  clicked_word <- wordcloud_freq_server("wordcloud", db_con,
+                        setup_project = loaded_project$setup_project,
+                        chosen_variable = chosen_variable$chosen,
+                        load = chosen_variable$load)
   
   observeEvent(input$debug, {
     browser()
