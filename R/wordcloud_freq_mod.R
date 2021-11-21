@@ -37,7 +37,7 @@ wordcloud_freq_server <- function(id, db_con, setup_project, chosen_variable, lo
     })
     
     output$wordcloud <- renderWordcloud2({
-      wordcloud2(head(req(words()), 100))
+      wordcloud2(head(req(words()), 100), size = 0.5)
     })
     
     output$freq_table <- renderDT({
