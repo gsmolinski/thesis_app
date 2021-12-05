@@ -50,7 +50,7 @@ wordcloud_freq_server <- function(id, db_con, setup_project, chosen_variable, lo
       words(words()[-as.numeric(row), ])
     })
     
-    return(reactive(input$wordcloud_clicked_word))
+    return(reactive(gsub(":.*", "", input$wordcloud_clicked_word)))
     
   })
 }
