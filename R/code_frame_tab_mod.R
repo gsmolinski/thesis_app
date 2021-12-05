@@ -147,5 +147,8 @@ code_frame_tab_server <- function(id, db_con, setup_project, chosen_variable, lo
         dbSendStatement(db_con, query)
       }
     })
+    
+    return(code_frame)
+    
   })
 }

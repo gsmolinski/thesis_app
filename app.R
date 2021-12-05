@@ -4,7 +4,6 @@ library(DBI)
 library(stringi)
 library(dplyr)
 library(tibble)
-library(stringdist)
 library(DT)
 library(purrr)
 library(wordcloud2)
@@ -33,7 +32,8 @@ ui <- fluidPage(
                tabPanel(title = "Verbatim",
                         br(),
                         fluidRow(
-                          column(6, offset = 6, wordcloud_freq_ui("wordcloud")),
+                          column(6, code_oe_ui("code_oe")),
+                          column(6, wordcloud_freq_ui("wordcloud")),
                           br()
                         )
                ),
@@ -62,7 +62,7 @@ server <- function(input, output, session) {
   chosen_variable <- choose_variable_server("code_variable", db_con,
                                             setup_project = loaded_project$setup_project,
                                             input_load = loaded_project$input_load)
-  code_frame_tab_server("code_frame", db_con,
+  code_frame <- code_frame_tab_server("code_frame", db_con,
                         setup_project = loaded_project$setup_project,
                         chosen_variable = chosen_variable$chosen,
                         load = chosen_variable$load)
@@ -73,6 +73,13 @@ server <- function(input, output, session) {
                         setup_project = loaded_project$setup_project,
                         chosen_variable = chosen_variable$chosen,
                         load = chosen_variable$load)
+  
+  code_oe_server("code_oe", db_con,
+                 setup_project = loaded_project$setup_project,
+                 chosen_variable = chosen_variable$chosen,
+                 load = chosen_variable$load,
+                 clicked_word = clicked_word,
+                 code_frame = code_frame)
   
   observeEvent(input$debug, {
     browser()

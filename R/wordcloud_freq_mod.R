@@ -9,13 +9,13 @@ wordcloud_freq_ui <- function(id) {
       tabPanel("Table",
                DTOutput(ns("freq_table")),
                br(),
-               actionButton(ns("stopword"), "Mark as stopword"),
+               actionButton(ns("stopword"), "Mark as stopword")
                )
     )
   )
 }
 
-wordcloud_freq_server <- function(id, db_con, setup_project, chosen_variable, load) {
+wordcloud_freq_server <- function(id, db_con, setup_project, chosen_variable, load, show_all) {
   moduleServer(id, function(input, output, session) {
     
     words <- reactiveVal()
