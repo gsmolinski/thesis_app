@@ -3,7 +3,9 @@ code_oe_ui <- function(id) {
   ns <- NS(id)
   
   tagList(
-    DTOutput(ns("table_code_oe"))
+    DTOutput(ns("table_code_oe")),
+    br(),
+    actionButton(ns("empty"), "Show empty codes")
   )
   
 }
@@ -53,7 +55,8 @@ code_oe_server <- function(id, db_con, setup_project, chosen_variable, load, cli
         ver <- verbatims()
       }
       verbatims(ver)
-      datatable(ver, editable = list(target = "cell", disable = list(columns = c(0, 1))), rownames = FALSE)
+      datatable(ver, editable = list(target = "cell", disable = list(columns = c(0, 1))), rownames = FALSE,
+                selection = "none")
     })
     
     observeEvent(input$table_code_oe_cell_edit, {
@@ -103,5 +106,12 @@ code_oe_server <- function(id, db_con, setup_project, chosen_variable, load, cli
         shinyalert(text = "At least one code not present in code frame.", type = "error")
       }
     })
+    
+    observeEvent(input$empty, {
+      ver <- verbatims() %>% 
+        arrange(desc(is.na(code)))
+      verbatims(ver)
+    })
+    
   })
 }
