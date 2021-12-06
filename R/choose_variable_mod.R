@@ -6,7 +6,7 @@ choose_variable_ui <- function(id) {
                                multiple = TRUE,
                                options = list(onInitialize = I('function() { this.setValue(""); }'),
                                               placeholder = "Choose variable(s)..."))),
-      column(1, actionButton(ns("load_variable"), "Load / Refresh"))
+      column(2, actionButton(ns("load_variable"), "Load / Refresh"))
     )
   )
 }

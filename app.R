@@ -8,11 +8,12 @@ library(DT)
 library(purrr)
 library(wordcloud2)
 library(tidyr)
+library(bslib)
 
 ui <- fluidPage(
   useShinyalert(),
-  titlePanel("Code OE"),
-  actionButton("debug", "Debug"), # remove later
+  theme = bs_theme(version = 5, bootswatch = "minty"),
+  #actionButton("debug", "Debug"), # remove later
   tabsetPanel(
     tabPanel(title = "Import",
              br(),
@@ -81,9 +82,9 @@ server <- function(input, output, session) {
                  clicked_word = clicked_word,
                  code_frame = code_frame)
   
-  observeEvent(input$debug, {
-    browser()
-  }) # remove later
+  # observeEvent(input$debug, {
+  #   browser()
+  # }) # remove later
   
   onStop(function() {
     dbDisconnect(db_con)

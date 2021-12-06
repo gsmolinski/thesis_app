@@ -79,7 +79,7 @@ code_frame_tab_server <- function(id, db_con, setup_project, chosen_variable, lo
     })
     
     output$code_frame_table <- renderDT(
-      code_frame(), editable = list(target = "cell", area = 2), rownames = FALSE
+      code_frame(), editable = list(target = "cell", area = 2), rownames = FALSE, selection = "single"
     )
     
     observeEvent(input$code_frame_table_cell_edit, {
