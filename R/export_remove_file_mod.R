@@ -2,7 +2,7 @@ export_remove_ui <- function(id) {
   ns <- NS(id)
   tagList(
     fluidRow(
-      column(1, downloadButton(ns("export_button"), "Export")),
+      column(2, downloadButton(ns("export_button"), "Export")),
       column(1, offset = 1, actionButton(ns("remove_button"), "Delete"))
     )
   )
